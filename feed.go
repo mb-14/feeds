@@ -81,14 +81,14 @@ type XmlFeed interface {
 
 // turn a feed object (either a Feed, AtomFeed, or RssFeed) into xml
 // returns an error if xml marshaling fails
-func ToXML(feed XmlFeed) (string, error) {
+func ToXML(feed XmlFeed, header string) (string, error) {
 	x := feed.FeedXml()
 	data, err := xml.MarshalIndent(x, "", "  ")
 	if err != nil {
 		return "", err
 	}
 	// strip empty line from default xml header
-	s := xml.Header[:len(xml.Header)-1] + string(data)
+	s := header + string(data)
 	return s, nil
 }
 
@@ -107,8 +107,13 @@ func WriteXML(feed XmlFeed, w io.Writer) error {
 
 // creates an Atom representation of this feed
 func (f *Feed) ToAtom() (string, error) {
+	return f.ToAtomWithHeader(xml.Header[:len(xml.Header)-1])
+}
+
+// creates an Atom representation of this feed with a custom header
+func (f *Feed) ToAtomWithHeader(customHeader string) (string, error) {
 	a := &Atom{f}
-	return ToXML(a)
+	return ToXML(a, customHeader)
 }
 
 // WriteAtom writes an Atom representation of this feed to the writer.
@@ -119,7 +124,7 @@ func (f *Feed) WriteAtom(w io.Writer) error {
 // creates an Rss representation of this feed
 func (f *Feed) ToRss() (string, error) {
 	r := &Rss{f}
-	return ToXML(r)
+	return ToXML(r, xml.Header[:len(xml.Header)-1])
 }
 
 // WriteRss writes an RSS representation of this feed to the writer.
