@@ -103,8 +103,8 @@ func newRssItem(i *Item) *RssItem {
 	if len(i.Content) > 0 {
 		item.Content = &RssContent{Content: i.Content}
 	}
-	if i.Source != nil {
-		item.Source = i.Source.Href
+	if i.Source != nil && i.Source.Link != nil {
+		item.Source = i.Source.Link.Href
 	}
 
 	// Define a closure
