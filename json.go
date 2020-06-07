@@ -162,7 +162,7 @@ func newJSONItem(i *Item) *JSONItem {
 		item.Url = i.Link.Href
 	}
 	if i.Source != nil {
-		item.ExternalUrl = i.Source.Href
+		item.ExternalUrl = i.Source.Link.Href
 	}
 	if i.Author != nil {
 		item.Author = &JSONAuthor{
