@@ -142,10 +142,10 @@ func newAtomEntry(i *Item) *AtomEntry {
 
 	if i.Source != nil {
 		x.Source = &AtomSource{
-			Title: x.Source.Title,
-			Logo:  x.Source.Logo,
-			Icon:  x.Source.Icon,
-			Id:    x.Id,
+			Title: i.Source.Title,
+			Logo:  i.Source.Logo,
+			Icon:  i.Source.Icon,
+			Id:    i.Id,
 		}
 		if i.Source.Link != nil {
 			x.Source.Links = append(x.Links, AtomLink{Href: i.Source.Link.Href, Type: i.Source.Link.Type, Rel: i.Source.Link.Rel, Length: i.Source.Link.Length})
