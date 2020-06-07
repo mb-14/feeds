@@ -41,7 +41,7 @@ type AtomContributor struct {
 
 type AtomCategory struct {
 	XMLName xml.Name `xml:"category"`
-	Term    string   `xml:"term"`
+	Term    string   `xml:"term,attr"`
 }
 
 type AtomSource struct {
