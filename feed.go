@@ -25,10 +25,15 @@ type Enclosure struct {
 	Url, Length, Type string
 }
 
+type Source struct {
+	Id, Title, Icon, Logo string
+	Links                 *Link
+}
+
 type Item struct {
 	Title       string
 	Link        *Link
-	Source      *Link
+	Source      *Source
 	Author      *Author
 	Description string // used as description in rss, summary in atom
 	Id          string // used as guid in rss, id in atom
@@ -36,6 +41,7 @@ type Item struct {
 	Created     time.Time
 	Enclosure   *Enclosure
 	Content     string
+	Categories  []string
 }
 
 type Feed struct {
@@ -50,6 +56,7 @@ type Feed struct {
 	Items       []*Item
 	Copyright   string
 	Image       *Image
+	Categories  []string
 }
 
 // add a new Item to a Feed

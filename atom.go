@@ -39,17 +39,31 @@ type AtomContributor struct {
 	AtomPerson
 }
 
+type AtomCategory struct {
+	XMLName xml.Name `xml:"category"`
+	Term    string   `xml:"term"`
+}
+
+type AtomSource struct {
+	XMLName xml.Name `xml:"source"`
+	Id      string   `xml:"id"`
+	Icon    string   `xml:"icon,omitempty"`
+	Logo    string   `xml:"logo,omitempty"`
+	Title   string   `xml:"title"` // required
+	Links   []AtomLink
+}
+
 type AtomEntry struct {
-	XMLName     xml.Name `xml:"entry"`
-	Xmlns       string   `xml:"xmlns,attr,omitempty"`
-	Title       string   `xml:"title"`   // required
-	Updated     string   `xml:"updated"` // required
-	Id          string   `xml:"id"`      // required
-	Category    string   `xml:"category,omitempty"`
+	XMLName     xml.Name        `xml:"entry"`
+	Xmlns       string          `xml:"xmlns,attr,omitempty"`
+	Title       string          `xml:"title"`   // required
+	Updated     string          `xml:"updated"` // required
+	Id          string          `xml:"id"`      // required
+	Categories  []*AtomCategory `xml:"category,omitempty"`
 	Content     *AtomContent
-	Rights      string `xml:"rights,omitempty"`
-	Source      string `xml:"source,omitempty"`
-	Published   string `xml:"published,omitempty"`
+	Rights      string      `xml:"rights,omitempty"`
+	Source      *AtomSource `xml:"source,omitempty"`
+	Published   string      `xml:"published,omitempty"`
 	Contributor *AtomContributor
 	Links       []AtomLink   // required if no child 'content' elements
 	Summary     *AtomSummary // required if content has src or content is base64
@@ -67,16 +81,16 @@ type AtomLink struct {
 }
 
 type AtomFeed struct {
-	XMLName     xml.Name `xml:"feed"`
-	Xmlns       string   `xml:"xmlns,attr"`
-	Title       string   `xml:"title"`   // required
-	Id          string   `xml:"id"`      // required
-	Updated     string   `xml:"updated"` // required
-	Category    string   `xml:"category,omitempty"`
-	Icon        string   `xml:"icon,omitempty"`
-	Logo        string   `xml:"logo,omitempty"`
-	Rights      string   `xml:"rights,omitempty"` // copyright used
-	Subtitle    string   `xml:"subtitle,omitempty"`
+	XMLName     xml.Name        `xml:"feed"`
+	Xmlns       string          `xml:"xmlns,attr"`
+	Title       string          `xml:"title"`   // required
+	Id          string          `xml:"id"`      // required
+	Updated     string          `xml:"updated"` // required
+	Icon        string          `xml:"icon,omitempty"`
+	Logo        string          `xml:"logo,omitempty"`
+	Rights      string          `xml:"rights,omitempty"` // copyright used
+	Subtitle    string          `xml:"subtitle,omitempty"`
+	Categories  []*AtomCategory `xml:"category"`
 	Link        *AtomLink
 	Author      *AtomAuthor `xml:"author,omitempty"`
 	Contributor *AtomContributor
@@ -122,6 +136,22 @@ func newAtomEntry(i *Item) *AtomEntry {
 		Summary: s,
 	}
 
+	for _, c := range i.Categories {
+		x.Categories = append(x.Categories, &AtomCategory{Term: c})
+	}
+
+	if i.Source != nil {
+		x.Source = &AtomSource{
+			Title: x.Source.Title,
+			Logo:  x.Source.Logo,
+			Icon:  x.Source.Icon,
+			Id:    x.Id,
+		}
+		if i.Link != nil {
+			x.Source.Links = append(x.Links, AtomLink{Href: i.Link.Href, Type: i.Link.Type, Rel: i.Link.Rel, Length: i.Link.Length})
+		}
+	}
+
 	// if there's a content, assume it's html
 	if len(i.Content) > 0 {
 		x.Content = &AtomContent{Content: i.Content, Type: "html"}
@@ -149,6 +179,11 @@ func (a *Atom) AtomFeed() *AtomFeed {
 		Updated:  updated,
 		Rights:   a.Copyright,
 	}
+
+	for _, c := range a.Categories {
+		feed.Categories = append(feed.Categories, &AtomCategory{Term: c})
+	}
+
 	if a.Author != nil {
 		feed.Author = &AtomAuthor{AtomPerson: AtomPerson{Name: a.Author.Name, Email: a.Author.Email}}
 	}
