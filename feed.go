@@ -26,8 +26,8 @@ type Enclosure struct {
 }
 
 type Source struct {
-	Id, Title, Icon, Logo string
-	Link                  *Link
+	Id, Title, Icon, Logo, Updated string
+	Link                           *Link
 }
 
 type Item struct {

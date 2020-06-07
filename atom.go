@@ -51,6 +51,7 @@ type AtomSource struct {
 	Logo    string   `xml:"logo,omitempty"`
 	Title   string   `xml:"title"` // required
 	Links   []AtomLink
+	Updated string `xml:"updated"`
 }
 
 type AtomEntry struct {
@@ -142,10 +143,11 @@ func newAtomEntry(i *Item) *AtomEntry {
 
 	if i.Source != nil {
 		x.Source = &AtomSource{
-			Title: i.Source.Title,
-			Logo:  i.Source.Logo,
-			Icon:  i.Source.Icon,
-			Id:    i.Source.Id,
+			Title:   i.Source.Title,
+			Logo:    i.Source.Logo,
+			Icon:    i.Source.Icon,
+			Id:      i.Source.Id,
+			Updated: i.Source.Updated,
 		}
 		if i.Source.Link != nil {
 			x.Source.Links = append(x.Source.Links, AtomLink{Href: i.Source.Link.Href, Type: i.Source.Link.Type, Rel: i.Source.Link.Rel, Length: i.Source.Link.Length})
